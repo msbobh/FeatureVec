@@ -11,18 +11,21 @@ namespace FeatureVec
     // Need to specify the length of the feature vector as a constant since this is dependent on the length of
     // the wordlist aka dictionary.
     //
-    //  This function reads in all the flattened .txt files that have been preprocessed (stripped of punctioatio and destemmed) 
-    //  looks up the each word in the dictionary and creates a binary feature vector with ones representing the words mathced in
+    //  This function reads in all the flattened .txt files that have been preprocessed (stripped of punctuation and destemmed) 
+    //  looks up the each word in the dictionary and creates a binary feature vector with 1's representing the words matched in
     //  the dictionary. Output is *.vec files and a single matrix "test.mat" that is composed from all the row vectors.
+    //
+    //  Requires the dictionary file "dictionary.fil", note this is not the direct output from Process docs. The file is loaded into
+    //  excel trimmed of short words and the column of frequences removed (these are for analysis only).
     //
 
     class Program
     {
-       const int vectorlength = 16000;
+       const int vectorlength = 536; // Note this is set to the number of unique words in the dictioanry
 
        static private int Lookupword(string[] vocab, string target)
         {
-            int index = -1; // -1 mequla word not found
+            int index = -1; // -1 means word not found
             for (int i = 0; i < vectorlength - 1; i++)
             {
                 if (vocab[i] == target) // We found a match so return the index
@@ -74,7 +77,16 @@ namespace FeatureVec
             // Read in the dictionary and store into an array  
             //********************************************************************************************
             string[] dict = new string[vectorlength - 1];
-            dict = File.ReadAllLines("dictionary.fil");
+            if (File.Exists ("dictionary.fil"))
+                {
+                   dict = File.ReadAllLines("dictionary.fil");
+                }
+            else
+                {                
+                    Console.WriteLine("Error trying to open dictionary");
+                    System.Environment.Exit(1);
+                }
+            
             string fname;
             int[] features = new int[vectorlength - 1];  // feature vecter for each file
 
