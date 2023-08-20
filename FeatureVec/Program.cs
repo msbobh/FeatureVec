@@ -117,7 +117,7 @@ namespace FeatureVec
 
                 foreach (var found in wordindexes)
                     {
-                        features[found] = 1;
+                        features[found] += 1;
                         x++;
                     }
                 
