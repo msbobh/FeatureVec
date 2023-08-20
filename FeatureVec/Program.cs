@@ -8,8 +8,8 @@ using System.IO;
 namespace FeatureVec
 {
     //
-    // Need to specify the length of the feature vector as a constant since this is dependent on the length of
-    // the wordlist aka dictionary.
+    // The program reads the number of lines in the dictioanry to determine the size of the vectors to be created.Where dictionary
+    // length = vectorlength.
     //
     //  This function reads in all the flattened .txt files that have been preprocessed (stripped of punctuation and destemmed) 
     //  looks up the each word in the dictionary and creates a binary feature vector with 1's representing the words matched in
@@ -21,42 +21,8 @@ namespace FeatureVec
 
     class Program
     {
-       const int vectorlength = 3597; // Note this is set to the number of unique words in the dictioanry
-        private static int[] features = new int [vectorlength - 1];
 
-       static private int Lookupword(string[] vocab, string target)
-        {
-            int index = -1; // -1 means word not found
-            for (int i = 0; i < vectorlength - 1; i++)
-            {
-                if (vocab[i] == target) // We found a match so return the index
-                {
-                    index = i;
-                    break;
-                }
-            }
-            return (index);
-        }
-        static private string[] creatMatrix(string filename)
-        {
-            string[] temp = new string[vectorlength-1];
-            string path = Directory.GetCurrentDirectory();
-            string[] vectorArray = Directory.GetFiles(path, "*.vec");
-            Array.Sort(vectorArray); // Maintain sorted order when creating the matrix
-            int i = 0;
-            using (StreamWriter outfile = new StreamWriter(filename)) // Using the "Using statement will close in the case of exceptions during write
-            {
-                foreach (var file in vectorArray)
-                {
-                    temp[i] = File.ReadAllText(file);
-                    outfile.WriteLine(temp[i]); // Write anohter row in the matrix
-                    i++;
-                    Console.WriteLine("vecfile {0}", file);
-                }
-            }
-            return (temp);
-        }
-
+        static int vectorlength = 0;
         static void Main(string[] args)
         {
             // get list of docs (.txt files)
@@ -84,19 +50,22 @@ namespace FeatureVec
             //********************************************************************************************
             // Read in the dictionary and store into an array  
             //********************************************************************************************
-            string[] dict = new string[vectorlength - 1];
-            if (File.Exists ("dictionary.fil"))
-                {
-                   dict = File.ReadAllLines("dictionary.fil");
-                }
+            string _dictionaryName = "dictionary.fil";
+            if (File.Exists(_dictionaryName))
+            {
+                Program.vectorlength = File.ReadAllLines("dictionary.fil").Count();
+            }
             else
-                {                
-                    Console.WriteLine("Error trying to open dictionary");
-                    System.Environment.Exit(1);
-                }
-            
+            {
+                Console.WriteLine("Error trying to open dictionary");
+                System.Environment.Exit(1);
+            }
+
+            string[] dict = new string[vectorlength - 1];
+            dict = File.ReadAllLines(_dictionaryName);
+       
             string fname;
-            // int[] features = new int[vectorlength - 1];  // feature vecter for each file
+             int[] features = new int[vectorlength - 1];  // feature vecter for each file
 
             foreach (var file in fileArray)
             {
@@ -117,7 +86,7 @@ namespace FeatureVec
 
                 foreach (var found in wordindexes)
                     {
-                        features[found] += 1;
+                        features[found] += 1;   // Creates word frequencies for found words in documents
                         x++;
                     }
                 
@@ -136,8 +105,40 @@ namespace FeatureVec
                 }
 
             } // complete each file
-            creatMatrix("resume.mat");
+            creatMatrix("resume.mat", vectorlength);
         }
-                
+        
+        static private int Lookupword(string[] vocab, string target)
+        {
+            int index = -1; // -1 means word not found
+            for (int i = 0; i < vectorlength - 1; i++)
+            {
+                if (vocab[i] == target) // We found a match so return the index
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return (index);
+        }
+        static private string[] creatMatrix(string filename, int _vectorlength)
+        {
+            string[] temp = new string[_vectorlength - 1];
+            string path = Directory.GetCurrentDirectory();
+            string[] vectorArray = Directory.GetFiles(path, "*.vec");
+            Array.Sort(vectorArray); // Maintain sorted order when creating the matrix
+            int i = 0;
+            using (StreamWriter outfile = new StreamWriter(filename)) // Using the "Using statement will close in the case of exceptions during write
+            {
+                foreach (var file in vectorArray)
+                {
+                    temp[i] = File.ReadAllText(file);
+                    outfile.WriteLine(temp[i]); // Write anohter row in the matrix
+                    i++;
+                    Console.WriteLine("vecfile {0}", file);
+                }
+            }
+            return (temp);
+        }
     }
 }
