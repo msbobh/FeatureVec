@@ -8,21 +8,25 @@ using System.IO;
 namespace FeatureVec
 {
     //
-    // The program reads the number of lines in the dictioanry to determine the size of the vectors to be created.Where dictionary
-    // length = vectorlength.
     //
     //  This function reads in all the flattened .txt files that have been preprocessed (stripped of punctuation and destemmed) 
-    //  looks up the each word in the dictionary and creates a binary feature vector with 1's representing the words matched in
-    //  the dictionary. Output is *.vec files and a single matrix "resume.mat" that is composed from all the row vectors.
+    //  The proceeds to look up the each word in the dictionary and creates a feature vector with freqeuncies for words present in the scanned
+    //  document and dictionary and zeros otherwise.
     //
-    //  Requires the dictionary file "dictionary.fil", note this is not the direct output from Process docs. The file is loaded into
-    //  excel trimmed of short words and the column of frequences removed (these are for analysis only).
+    //  Output is one vector file for each document processed (suffixes are  *.vec) a Matrix of all the processed files is also created
+    //  "resume.mat" that is composed from all the row vectors.
+    //
+    // In order to determine the length of the vectors (equal to the number of words in the dictionary) the program reads the number of
+    // lines in directrly from the dictionary and saves that for use in the program.
+    //
+    //  Note: Requires the dictionary file "dictionary.fil", also note this is not the direct output from Process docs. The file is loaded into
+    //  excel trimmed of short words and and saves as a csv.
     // ** Bug,program will consume any text file in the directory even if it is not a training example
 
     class Program
     {
 
-        static int vectorlength = 0;
+        static int vectorlength; // also number of words in the dictionary
         static void Main(string[] args)
         {
             // get list of docs (.txt files)
