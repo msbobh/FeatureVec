@@ -1,13 +1,15 @@
 # FeatureVec
- Converts text files (.txt) to vectors of 1 and 0's. The length of the vectors needs to be specified as a constant in the code (program.cs) and recompiled
- 
- A dictioary file as also needed as input, must be named dictionary.fil 
- 
- This program reads in all the flattened .txt files in the directory where the program is executed, The input files need to be proccesed by ProcessDocs so they are stripped
- of punctuation and destemmed).
- The program then looks up the each word in the dictionary and creates a binary feature vector with 1's representing the words matched in the dictionary.
- Output are *.vec files and a single matrix "resume.mat" that is composed from all the row vectors with the length being the number of .txt files processed
- 
- Requires the dictionary file "dictionary.fil", note this is not the direct output from Process docs. The file is loaded into excel trimmed of short words
- and the column of frequences removed (at this time these are for analysis only).
- ** Bug,program will consume any text file in the directory even if it is not a training example
+
+    This function reads in all the flattened .txt files that have been preprocessed (stripped of punctuation and destemmed) 
+    The proceeds to look up the each word in the dictionary and creates a feature vector with freqeuncies for words present in the scanned
+    document and dictionary and zeros otherwise.
+    
+    Output is one vector file for each document processed (suffixes are  *.vec) a Matrix of all the processed files is also created
+    "resume.mat" that is composed from all the row vectors.
+    
+    In order to determine the length of the vectors (equal to the number of words in the dictionary) the program reads the number of
+    lines in directrly from the dictionary and saves that for use in the program.
+    
+    Note: Requires the dictionary file "dictionary.fil", also note this is not the direct output from Process docs. The file is loaded into
+    excel trimmed of short words and and saves as a csv.
+    * Bug,program will consume any text file in the directory even if it is not a training example
